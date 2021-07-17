@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Video Player</title>
+	<script type="text/javascript">
+		function shuffle(array) {
+			for (let i = array.length - 1; i > 0; i--) {
+				let j = Math.floor(Math.random() * (i + 1));
+				let temp = array[i];
+				array[i] = array[j];
+				array[j] = temp;
+			}
+		}
+	</script>	
+	<style type="text/css">
+		body { margin: 0; background-color: #181a1b }
+		.center { display: flex; align-items: center; flex-direction: column }
+		#player { display: block; width: 80vw; max-height: 80vh }
+		p { color: #FFF; font-family: monospace; margin: 6px }
+	</style>
+</head>
+<body>
+	<div class="center">
+		<div style="display: flex; justify-content: center">
+			<button onclick="back_video()">back</button>
+			<button onclick="shuffle(videos)">shuffle</button>
+			<button onclick="next_video()">next</button>
+			<button onclick="toggle_loop()" id="toggle">toggle loop (-)</button>
+		</div>
+		<video id="player" controls></video>
+		<p id="current" style="font-weight: bold; font-size: 1.7em; width: 80vw"></p>
+	</div>
+	<script type="text/javascript">
+		let videos = [{{videos}}];
+		shuffle(videos);
+		
+		const player = document.getElementById('player');
+		let idx = 0;
+		let loop = false;
+		
+		player.onended = next_video;
+		player.src = videos[0];
+		print_playing();
+		
+		function back_video() {
+			if (idx == 0)
+				idx = videos.length - 1;
+			else
+				idx = idx - 1;
+			player.src = videos[idx];
+			player.play();
+			print_playing();
+			
+		}
+		function next_video() {
+			idx = (idx + 1) % videos.length;
+			player.src = videos[idx];
+			player.play();
+			print_playing();
+		}
+		function toggle_loop() {
+			let toggle = document.getElementById('toggle');
+			loop = !loop;
+			player.loop = loop;
+			if (loop == true)
+				toggle.innerHTML = 'toggle loop (x)';
+			else
+				toggle.innerHTML = 'toggle loop (-)';
+		}
+		function print_playing() {
+			const reg = new RegExp(/\/static\/(.+)(-.{11}\.mp4)/);
+			let current = document.getElementById('current');
+			current.innerHTML = reg.exec(videos[idx])[1];;
+		}
+	</script>
+</body>
+</html>
