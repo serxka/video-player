@@ -25,6 +25,7 @@
 		<div style="display: flex; justify-content: center">
 			<button onclick="back_video()">back</button>
 			<button onclick="shuffle(videos)">shuffle</button>
+			<button onclick="reset_playlist()">use playlist</button>
 			<button onclick="next_video()">next</button>
 			<button onclick="toggle_loop()" id="toggle">toggle loop (-)</button>
 		</div>
@@ -33,6 +34,7 @@
 	</div>
 	<script type="text/javascript">
 		let videos = [{{videos}}];
+		let playlist = {{playlist}};
 		shuffle(videos);
 		
 		const player = document.getElementById('player');
@@ -40,24 +42,35 @@
 		let loop = false;
 		
 		player.onended = next_video;
-		player.src = videos[0];
+		player.src = videos[idx];
 		print_playing();
 		
+		function set_video() {
+			player.src = videos[idx];
+			player.play();
+			print_playing();
+		}
 		function back_video() {
 			if (idx == 0)
 				idx = videos.length - 1;
 			else
 				idx = idx - 1;
-			player.src = videos[idx];
-			player.play();
-			print_playing();
+			set_video();
 			
 		}
 		function next_video() {
 			idx = (idx + 1) % videos.length;
-			player.src = videos[idx];
-			player.play();
-			print_playing();
+			set_video();
+		}
+		function reset_playlist() {
+			let new_videos = [];
+			for (id of playlist) {
+				let url = videos[videos.findIndex(url => url.includes(id))];
+				new_videos.push(url);
+			}
+			videos = new_videos;
+			idx = 0;
+			set_video();
 		}
 		function toggle_loop() {
 			let toggle = document.getElementById('toggle');

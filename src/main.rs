@@ -27,8 +27,12 @@ async fn player(video_path: web::Data<String>) -> HttpResponse {
         files.push_str(&path.into_string().unwrap());
         files.push_str("\", ");
     }
+    let playlist = std::fs::read_to_string(format!("{}/playlist.json", video_path.get_ref()))
+        .unwrap_or_else(|_| "null".to_owned());
     files.truncate(files.len() - 2);
-    let html = include_str!("index.html").replace("{{videos}}", &files);
+    let html = include_str!("index.html")
+        .replace("{{videos}}", &files)
+        .replace("{{playlist}}", &playlist);
     HttpResponse::Ok().body(html)
 }
 
